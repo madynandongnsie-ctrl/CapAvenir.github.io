@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CapAvenir — Service Public d'Orientation & d'Autonomie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .civic-gradient {
+      background: linear-gradient(135deg, #000091 0%, #1e3a8a 60%, #1e1b4b 100%);
+    }
+    .slide-fade {
+      animation: fadeSlide 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Custom scrollbar for app mockup */
+    .phone-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .phone-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <!-- French Republic Tri-color Top Accent Bar -->
+    <div class="h-1.5 w-full flex">
+      <div class="w-1/3 bg-[#000091]"></div>
+      <div class="w-1/3 bg-white"></div>
+      <div class="w-1/3 bg-[#E1000F]"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#000091] text-white flex items-center justify-center shadow-md font-display font-bold text-lg relative overflow-hidden">
+          <span>CA</span>
+          <span class="absolute bottom-0 right-0 w-3 h-3 bg-[#E1000F] rounded-tl-md"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display font-bold text-xl tracking-tight text-[#000091]">CapAvenir</span>
+            <span id="badge-gov" class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-[#000091] border border-blue-200">
+              Service Public · État
+            </span>
+          </div>
+          <p id="brand-tagline" class="text-xs text-slate-500">Orientation & Autonomie des Jeunes</p>
+        </div>
+      </div>
+
+      <!-- Center Mode Switcher: Pitch Deck vs Interactive App -->
+      <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <button id="btn-mode-pitch" onclick="setMode('pitch')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-white text-[#000091] shadow-sm">
+          <i class="fa-solid fa-person-chalkboard"></i>
+          <span id="nav-pitch-label">Présentation Pitch</span>
+        </button>
+        <button id="btn-mode-app" onclick="setMode('app')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900">
+          <i class="fa-solid fa-mobile-screen-button"></i>
+          <span id="nav-app-label">Prototype App Live</span>
+        </button>
+      </div>
+
+      <!-- Instant FR / EN Language Switcher -->
+      <div class="flex items-center gap-2">
+        <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200" role="group" aria-label="Language Switcher">
+          <button id="lang-fr" onclick="setLanguage('fr')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-[#000091] text-white shadow-sm">
+            <span>🇫🇷</span>
+            <span>FR</span>
+          </button>
+          <button id="lang-en" onclick="setLanguage('en')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <span>🇬🇧</span>
+            <span>EN</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- ===================================================================== -->
+    <!-- PART 1: INTERACTIVE PITCH DECK PRESENTATION                           -->
+    <!-- ===================================================================== -->
+    <section id="section-pitch" class="flex flex-col gap-6">
+      <!-- Slide Progress & Navigation Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-white px-5 py-3.5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2" id="slide-dots"></div>
+
+        <div class="flex items-center gap-3">
+          <span id="slide-counter" class="text-xs font-bold uppercase tracking-wider text-slate-500">Slide 1 / 6</span>
+          <div class="flex items-center gap-2">
+            <button onclick="prevSlide()" id="btn-prev" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-semibold transition flex items-center gap-1.5 disabled:opacity-40">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span id="txt-prev">Précédent</span>
+            </button>
+            <button onclick="nextSlide()" id="btn-next" class="px-4 py-2 rounded-xl bg-[#000091] hover:bg-blue-900 text-white text-sm font-semibold transition flex items-center gap-1.5 shadow-sm">
+              <span id="txt-next">Suivant</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Slide Stage -->
+      <div id="slide-stage" class="min-h-[540px] rounded-3xl shadow-xl border border-slate-200 overflow-hidden bg-white"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PART 2: LIVE INTERACTIVE APPLICATION PROTOTYPE                        -->
+    <!-- ===================================================================== -->
+    <section id="section-app" class="hidden flex-col gap-6">
+      <!-- Top Intro & Persona Profile Selector -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <span id="app-banner-badge" class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#E1000F] bg-red-50 px-3 py-1 rounded-full mb-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Démonstration Interactive · App État</span>
+          </span>
+          <h2 id="app-banner-title" class="text-2xl sm:text-3xl font-bold text-slate-900">Testez CapAvenir selon le profil de l'élève</h2>
+          <p id="app-banner-sub" class="text-sm text-slate-600 mt-1">Sélectionnez un profil pour voir comment l'application s'adapte à sa ville, son niveau et son blocage actuel.</p>
+        </div>
+
+        <!-- Persona Switcher Tabs -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <button onclick="selectPersona('inaya')" id="tab-inaya" class="p-3 rounded-2xl border-2 text-left transition-all flex items-center gap-3 border-[#000091] bg-blue-50/70">
+            <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center shrink-0">İN</div>
+            <div>
+              <div class="font-bold text-sm text-slate-900">İnaya, 14 ans</div>
+              <div id="tab-inaya-sub" class="text-xs text-slate-600">4e · Saint-Denis</div>
+            </div>
+          </button>
+
+          <button onclick="selectPersona('saphir')" id="tab-saphir" class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-left transition-all flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-rose-600 text-white font-bold flex items-center justify-center shrink-0">SA</div>
+            <div>
+              <div class="font-bold text-sm text-slate-900">Saphir, 17 ans</div>
+              <div id="tab-saphir-sub" class="text-xs text-slate-600">1re · Nice</div>
+            </div>
+          </button>
+
+          <button onclick="selectPersona('rayan')" id="tab-rayan" class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-left transition-all flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0">RA</div>
+            <div>
+              <div class="font-bold text-sm text-slate-900">Rayan Ali, 20 ans</div>
+              <div id="tab-rayan-sub" class="text-xs text-slate-600">L2 · Plouhinec</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive App Workspace: Context Card + Realistic Mobile App Simulator -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Left Column: Context & How CapAvenir Solves Their Specific Blockage -->
+        <div id="app-context-panel" class="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6"></div>
+
+        <!-- Right Column: Interactive Mobile App Frame -->
+        <div class="lg:col-span-7 flex justify-center">
+          <div class="w-full max-w-[440px] bg-slate-900 rounded-[2.75rem] p-3 shadow-2xl border-4 border-slate-800">
+            <!-- Phone Notch & Status Bar -->
+            <div class="bg-white rounded-[2.1rem] overflow-hidden flex flex-col h-[660px]">
+              <div class="bg-[#000091] text-white px-5 pt-3 pb-4">
+                <div class="flex items-center justify-between text-[11px] opacity-80 mb-2">
+                  <span>9:41 · CapAvenir Public</span>
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-wifi"></i>
+                    <i class="fa-solid fa-battery-full"></i>
+                  </div>
+                </div>
+                <div id="phone-header-content"></div>
+              </div>
+
+              <!-- Interactive App Screen Body -->
+              <div id="phone-screen-body" class="flex-grow overflow-y-auto phone-scroll p-4 space-y-4 bg-slate-50"></div>
+
+              <!-- Bottom App Navigation Bar -->
+              <div id="phone-bottom-nav" class="bg-white border-t border-slate-200 px-3 py-2 grid grid-cols-3 gap-1 text-center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // COMPLETE BILINGUAL DICTIONARY (FRENCH & ENGLISH)
+    // =========================================================================
+    const i18n = {
+      fr: {
+        govBadge: "Service Public · État",
+        tagline: "Orientation & Autonomie des Jeunes",
+        navPitch: "Présentation Pitch",
+        navApp: "Prototype App Live",
+        prev: "Précédent",
+        next: "Suivant",
+        slideLabel: "Diapositive",
+
+        // SLIDES CONTENT
+        slides: [
+          // SLIDE 1: TITLE & VISION
+          {
+            type: "hero",
+            eyebrow: "Plateforme Publique Nationale · Financée par l'État",
+            title: "CapAvenir : Choisir son futur en conscience, partout en France",
+            subtitle: "Résoudre la crise systémique de l'orientation précoce et préparer chaque jeune à la réalité de la vie adulte grâce à des semaines thématiques hebdomadaires et un compagnon numérique local.",
+            ctaApp: "Tester le Prototype Interactif",
+            ctaNext: "Découvrir le Problème",
+            pillars: [
+              { icon: "fa-landmark", title: "100% Public & Gratuit", desc: "Déployé dans tous les collèges, lycées et universités de France." },
+              { icon: "fa-calendar-week", title: "1 Semaine = 1 Thème", desc: "Des immersions concrètes adaptées à chaque niveau scolaire." },
+              { icon: "fa-location-dot", title: "Ancrage Local", desc: "Connecté aux professionnels, lycées et aides de chaque territoire." }
+            ]
+          },
+          // SLIDE 2: SYSTEMIC PROBLEM
+          {
+            type: "problem",
+            badge: "01 · Le Constat Systémique",
+            title: "En France, on demande aux jeunes de décider trop tôt, à l'aveugle.",
+            lead: "Dès le collège, les élèves doivent formuler des vœux déterminants sans connaître la réalité des métiers, les passerelles possibles ni les bases de la vie administrative.",
+            stat1Num: "14 ans",
+            stat1Text: "L'âge des premiers choix décisifs au collège sans visibilité sur les débouchés réels.",
+            stat2Num: "3 ruptures",
+            stat2Text: "Orientation subie au collège, angoisse des spécialités au lycée, isolement administratif à l'université.",
+            points: [
+              { icon: "fa-eye-slash", title: "Manque de vision concrète", desc: "Les élèves choisissent par mimétisme social ou selon leurs amis plutôt que par intérêt éclairé." },
+              { icon: "fa-lock", title: "Illusion de l'irréversibilité", desc: "Au lycée, une mauvaise combinaison de spécialités donne l'impression d'avoir « gâché sa vie »." },
+              { icon: "fa-file-circle-exclamation", title: "Choc de l'autonomie adulte", desc: "À 20 ans, les étudiants gèrent impôts, budget et démarches sans jamais y avoir été formés." }
+            ]
+          },
+          // SLIDE 3: OUR 3 PERSONAS
+          {
+            type: "personas",
+            badge: "02 · La Réalité du Terrain",
+            title: "Trois jeunes, trois villes, trois urgences concrètes",
+            subtitle: "Nos personas illustrent la fracture entre les exigences du système éducatif et les besoins réels des jeunes.",
+            cards: [
+              {
+                name: "İnaya, 14 ans",
+                role: "Élève de 4e · Collège à Saint-Denis",
+                color: "indigo",
+                situation: "Doit rendre ses vœux d'orientation d'ici vendredi. Veut aller dans le même lycée que sa meilleure amie pour faire infirmière.",
+                quote: "« Je veux suivre ma copine en soins infirmiers, même si je ne sais pas vraiment si ce métier va me plaire. »"
+              },
+              {
+                name: "Saphir, 17 ans",
+                role: "Élève de Première · Lycée à Nice",
+                color: "rose",
+                situation: "A séché les cours aujourd'hui. Déteste les spécialités qu'il a choisies et pense s'être fermé toutes les portes.",
+                quote: "« Comment je vais m'en sortir ? J'ai l'impression d'avoir gâché ma vie en choisissant ces matières. »"
+              },
+              {
+                name: "Rayan Ali, 20 ans",
+                role: "Étudiant en Licence 2 · Plouhinec",
+                color: "emerald",
+                situation: "Rentre épuisé de son service au restaurant. Doit déclarer ses impôts et boucler son budget jusqu'à la fin du mois.",
+                quote: "« Je ne sais même pas quoi manger ce soir et je stresse pour toute la paperasse fiscale qui m'attend. »"
+              }
+            ]
+          },
+          // SLIDE 4: WHAT BLOCKS THEM VS A GOOD DAY
+          {
+            type: "comparison",
+            badge: "03 · Diagnostic & Transformation",
+            title: "Ce qui les bloque aujourd'hui vs. Une « Bonne Journée » avec CapAvenir",
+            colBlock: "Ce qui les bloque aujourd'hui",
+            colGood: "Une « Bonne Journée » grâce à CapAvenir",
+            rows: [
+              {
+                who: "İnaya (14 ans · Saint-Denis)",
+                block: "Manque de connaissances sur les filières et préfère suivre les ambitions de sa copine par peur de l'inconnu.",
+                good: "On lui explique avec pédagogie les métiers du soin et les autres voies pour qu'elle choisisse selon ses propres envies."
+              },
+              {
+                who: "Saphir (17 ans · Nice)",
+                block: "Se sent piégé par ses spécialités de Première, décroche et croit n'avoir aucune chance d'accéder au métier voulu.",
+                good: "On relativise son choix et on lui montre les passerelles concrètes pour rejoindre les études de son choix malgré tout."
+              },
+              {
+                who: "Rayan Ali (20 ans · Plouhinec)",
+                block: "Aucune maîtrise de la déclaration d'impôts ni de la gestion d'un petit salaire étudiant en fin de mois.",
+                good: "On le guide étape par étape sur ses formalités fiscales, son budget mensuel et des repas étudiants économiques."
+              }
+            ]
+          },
+          // SLIDE 5: THE SOLUTION - WEEKLY THEMATIC IMMERSIONS
+          {
+            type: "solution",
+            badge: "04 · La Solution Pédagogique",
+            title: "Chaque semaine, une thématique adaptée au niveau dans chaque établissement",
+            subtitle: "Un programme national rythmé par des rencontres humaines, des ateliers pratiques et des professionnels de terrain.",
+            levels: [
+              {
+                level: "Au Collège (4e – 3e)",
+                tag: "Découvrir & Décloisonner",
+                color: "indigo",
+                items: [
+                  "Semaine de l'Agriculture & de l'Artisanat : des professionnels viennent présenter leur métier, leurs gestes et leur quotidien.",
+                  "Semaine de l'Orientation : des lycéens plus âgés expliquent leurs filières, pourquoi ils les ont choisies et leurs projets."
+                ]
+              },
+              {
+                level: "Au Lycée (2nde – Terminale)",
+                tag: "Approfondir & Se connaître",
+                color: "rose",
+                items: [
+                  "Semaine des Spécialités & Débouchés : étudiants et professionnels dévoilent les vraies passerelles post-bac.",
+                  "Semaine Cerveau, Sommeil & Méthodes : comprendre comment fonctionne le cerveau, réguler son sommeil et gérer son stress."
+                ]
+              },
+              {
+                level: "À l'Université & Études Sup.",
+                tag: "Maîtriser la Vie d'Adulte",
+                color: "emerald",
+                items: [
+                  "Ateliers Administration & Impôts : remplir sa déclaration fiscale et comprendre ses droits sociaux (CAF, APL).",
+                  "Gestion Financière & Quotidien : gérer un budget étudiant, éviter le découvert et cuisiner sain à petit prix."
+                ]
+              }
+            ]
+          },
+          // SLIDE 6: LOCAL DIGITAL COMPANION
+          {
+            type: "local",
+            badge: "05 · L'Application Locale & Personnalisée",
+            title: "Un outil numérique public qui s'adapte à chaque ville et chaque élève",
+            subtitle: "Parce que les réalités d'İnaya à Saint-Denis, de Saphir à Nice et de Rayan Ali à Plouhinec sont différentes, l'application personnalise les ressources localement.",
+            features: [
+              { icon: "fa-map-location-dot", title: "Intervenants & Établissements Locaux", desc: "Portes ouvertes des lycées du secteur, artisans locaux et forums métiers près de chez soi." },
+              { icon: "fa-route", title: "Simulateur de Passerelles", desc: "Dédramatiser les choix de spécialités en affichant toutes les voies d'accès vers un même métier." },
+              { icon: "fa-calculator", title: "Boîte à Outils Vie Adulte", desc: "Tutos impôts en 10 minutes, calculateur de reste-à-vivre et recettes étudiantes à 3 €." }
+            ],
+            ctaLaunch: "Ouvrir le Prototype Interactif Maintenant"
+          }
+        ],
+
+        // INTERACTIVE APP PROTOTYPE CONTENT
+        appBannerBadge: "Démonstration Interactive · App État",
+        appBannerTitle: "Testez CapAvenir selon le profil de l'élève",
+        appBannerSub: "Sélectionnez un profil pour voir comment l'application s'adapte à sa ville, son niveau et son blocage actuel.",
+        tabInayaSub: "4e · Saint-Denis",
+        tabSaphirSub: "1re · Nice",
+        tabRayanSub: "L2 · Plouhinec",
+
+        personasApp: {
+          inaya: {
+            contextTitle: "Profil : İnaya, 14 ans (Saint-Denis)",
+            contextBadge: "Collège · Semaine Découverte Santé & Métiers",
+            blockageLabel: "Blocage identifié :",
+            blockageText: "Veut choisir le lycée de sa meilleure amie en filière infirmière sans connaître la réalité du métier.",
+            solutionLabel: "Action CapAvenir :",
+            solutionText: "Lui faire tester concrètement la journée d'une infirmière et découvrir les lycées de Saint-Denis selon SES propres centres d'intérêt.",
+            greeting: "Bonjour İnaya 👋",
+            locationHeader: "Collège Jean-Moulin · Saint-Denis (93)",
+            weekBanner: "Semaine Thématique : Santé, Soin & Vocations",
+            navTabs: [
+              { id: "week", icon: "fa-calendar-check", label: "Ma Semaine" },
+              { id: "quiz", icon: "fa-stethoscope", label: "Test Métier" },
+              { id: "local", icon: "fa-school", label: "Lycées 93" }
+            ],
+            weekTitle: "Programme de ta semaine au collège",
+            weekEvents: [
+              { day: "Mardi · 14h", title: "Rencontre : Sarah, infirmière à l'hôpital Delafontaine", desc: "Horaires décalés, gestes techniques, relation patient : la vraie vie du métier." },
+              { day: "Jeudi · 10h", title: "Forum des Lycéens de Saint-Denis", desc: "Des élèves de 2nde générale, ST2S et Bac Pro expliquent leurs choix." },
+              { day: "Vendredi · 16h", title: "Atelier : Choisir pour soi, pas juste pour suivre ses amis", desc: "Bilan personnalisé avant de rendre ta fiche de vœux." }
+            ],
+            quizTitle: "Infirmière : est-ce vraiment fait pour toi ?",
+            quizIntro: "Réponds à 3 situations réelles présentées par les pros cette semaine :",
+            quizQuestions: [
+              { q: "1. Travailler certains week-ends et jours fériés à l'hôpital :", yes: "Ça me motive si j'aide les gens", no: "Je préfère des horaires fixes" },
+              { q: "2. Être au contact du sang, des soins techniques et de l'urgence :", yes: "Je garde mon sang-froid", no: "Je préfère le conseil ou le social" }
+            ],
+            quizResultGood: "✨ Tu sembles attirée par le soin ! Découvre aussi les métiers d'éducatrice ou de manipulatrice radio.",
+            quizResultAlt: "💡 Bon réflexe de vérifier ! Tu aimes aider les autres sans l'aspect médical : explore la filière Social / Animation.",
+            localTitle: "Portes Ouvertes & Lycées autour de Saint-Denis",
+            localSchools: [
+              { name: "Lycée Paul Éluard (Saint-Denis)", track: "Bac Général & Technologique ST2S", dist: "1,2 km · Portes ouvertes Samedi 9h" },
+              { name: "Lycée Suger (Saint-Denis)", track: "Métiers de la relation client, Audiovisuel & Général", dist: "1,8 km · Visite guidée Mercredi 14h" }
+            ]
+          },
+          saphir: {
+            contextTitle: "Profil : Saphir, 17 ans (Nice)",
+            contextBadge: "Lycée · Semaine Passerelles & Neurosciences",
+            blockageLabel: "Blocage identifié :",
+            blockageText: "A séché les cours aujourd'hui. Regrette ses spécialités de Première et pense avoir ruiné son avenir.",
+            solutionLabel: "Action CapAvenir :",
+            solutionText: "Lui prouver qu'aucun choix de spécialité n'est définitif grâce au Simulateur de Passerelles et l'aider à retrouver un rythme.",
+            greeting: "Salut Saphir 👋",
+            locationHeader: "Lycée Masséna · Nice (06)",
+            weekBanner: "Semaine Thématique : Cerveau, Sommeil & Passerelles",
+            navTabs: [
+              { id: "bridges", icon: "fa-shuffle", label: "Passerelles" },
+              { id: "brain", icon: "fa-brain", label: "Cerveau & Sommeil" },
+              { id: "mentors", icon: "fa-user-graduate", label: "Étudiants Nice" }
+            ],
+            bridgesTitle: "Tu n'as PAS gâché ton avenir. Vérifie par toi-même :",
+            bridgesIntro: "Choisis ton objectif post-bac pour voir comment y accéder même avec tes spécialités actuelles :",
+            bridgeTargets: [
+              {
+                label: "Informatique / Numérique (sans spé Maths)",
+                plan: "✅ Possible via BUT Informatique (quotas bacs techno/généraux), Licence MIASHS avec remise à niveau ou École du numérique à Sophia-Antipolis."
+              },
+              {
+                label: "Commerce, Management ou Communication",
+                plan: "✅ Tes spécialités actuelles sont acceptées en BUT TC, Licence Éco-Gestion ou Écoles post-bac. L'important est ton projet motivé sur Parcoursup."
+              },
+              {
+                label: "Changer une spécialité en Terminale",
+                plan: "✅ Tu peux abandonner la spécialité qui te bloque en fin de Première et demander une passerelle auprès de ton professeur principal dès cette semaine."
+              }
+            ],
+            brainTitle: "Atelier Cerveau & Sommeil (Semaine Lycée)",
+            brainTips: [
+              { icon: "fa-moon", title: "Pourquoi tu décroches le matin", desc: "À 17 ans, ton horloge biologique décale la mélatonine de 2h. Couper les écrans 45 min avant de dormir augmente ta concentration de 35%." },
+              { icon: "fa-bolt", title: "Règle des 25 minutes", desc: "Ton cerveau mémorise mieux en blocs courts de 25 min suivis de 5 min de pause active." }
+            ],
+            mentorsTitle: "Étudiants d'Université Côte d'Azur qui ont changé de voie",
+            mentorsList: [
+              { name: "Yanis, 19 ans (L1 Info à Nice)", story: "« J'avais pris HGGSP et SES en Première. J'ai fait une année passerelle et aujourd'hui je code. »" },
+              { name: "Clara, 20 ans (BUT GEA Nice)", story: "« J'ai séché pendant 2 semaines en 1re tellement je stressais. Parler à un tuteur m'a débloquée. »" }
+            ]
+          },
+          rayan: {
+            contextTitle: "Profil : Rayan Ali, 20 ans (Plouhinec)",
+            contextBadge: "Université · Semaine Autonomie & Vie Pratique",
+            blockageLabel: "Blocage identifié :",
+            blockageText: "Rentre épuisé de son job étudiant au restaurant. Stresse pour sa déclaration d'impôts, son budget de fin de mois et son dîner.",
+            solutionLabel: "Action CapAvenir :",
+            solutionText: "Un assistant ultra-pratique : guide fiscal en 3 étapes, simulateur de reste-à-vivre et idées de repas sains à moins de 3 €.",
+            greeting: "Bonsoir Rayan Ali 👋",
+            locationHeader: "Étudiant L2 · Plouhinec (29)",
+            weekBanner: "Semaine Thématique : Impôts, Budget & Droits Étudiants",
+            navTabs: [
+              { id: "taxes", icon: "fa-file-invoice-dollar", label: "Impôts 10min" },
+              { id: "budget", icon: "fa-wallet", label: "Mon Budget" },
+              { id: "meals", icon: "fa-utensils", label: "Repas 3 €" }
+            ],
+            taxesTitle: "Déclaration d'impôts étudiante en 3 étapes simples",
+            taxesSteps: [
+              { step: "1. Job étudiant exonéré", desc: "Bonne nouvelle : tes revenus de serveur au restaurant sont exonérés d'impôt jusqu'à 5 318 € par an (limite moins de 26 ans) !" },
+              { step: "2. Rattachement ou déclaration seule", desc: "Si tu déclares seul, tu peux toucher la Prime d'Activité ou faciliter ton dossier APL." },
+              { step: "3. Permanence gratuite Jeudi", desc: "Un agent des Finances Publiques anime un atelier de 30 min sur ton campus ce jeudi à 17h30." }
+            ],
+            budgetTitle: "Calculateur Fin de Mois (Reste à vivre)",
+            budgetSalaryLabel: "Salaire restant + Bourse/APL (€) :",
+            budgetBillsLabel: "Charges fixes restantes (€) :",
+            budgetDaysLabel: "Jours restants avant la paie :",
+            budgetPerDayText: "Tu peux dépenser jusqu'à",
+            budgetPerDaySuffix: "/ jour sereinement.",
+            mealsTitle: "Idées Dîner Express après ton service (< 3 €)",
+            mealsList: [
+              { name: "Omelette aux pommes de terre & herbes", time: "10 min · 1,85 €", desc: "3 œufs, 2 pommes de terre, un peu d'huile et d'ail. Riche en protéines après le service." },
+              { name: "Dahl de lentilles corail express", time: "15 min · 2,10 €", desc: "Lentilles corail, concentré de tomate, cumin et riz. Nourrissant et économique." },
+              { name: "Pâtes complètes thon, citron & persil", time: "12 min · 2,40 €", desc: "Prêt le temps de la cuisson des pâtes, zéro prise de tête." }
+            ]
+          }
+        }
+      },
+
+      // =======================================================================
+      // ENGLISH TRANSLATION DICTIONARY
+      // =======================================================================
+      en: {
+        govBadge: "Public Service · State Funded",
+        tagline: "Youth Orientation & Life Autonomy",
+        navPitch: "Pitch Presentation",
+        navApp: "Live App Prototype",
+        prev: "Previous",
+        next: "Next",
+        slideLabel: "Slide",
+
+        slides: [
+          // SLIDE 1: TITLE & VISION
+          {
+            type: "hero",
+            eyebrow: "National Public Platform · State-Funded Initiative",
+            title: "CapAvenir: Choosing Your Future Consciously, Across France",
+            subtitle: "Solving the systemic early-orientation gap and preparing every young person for adult life through weekly thematic school immersions and a localized digital companion.",
+            ctaApp: "Launch Interactive Prototype",
+            ctaNext: "Explore the Problem",
+            pillars: [
+              { icon: "fa-landmark", title: "100% Public & Free", desc: "Deployed across every middle school, high school, and university in France." },
+              { icon: "fa-calendar-week", title: "1 Week = 1 Theme", desc: "Hands-on weekly immersions tailored to each educational level." },
+              { icon: "fa-location-dot", title: "Locally Anchored", desc: "Connected to local professionals, schools, and support services." }
+            ]
+          },
+          // SLIDE 2: SYSTEMIC PROBLEM
+          {
+            type: "problem",
+            badge: "01 · The Systemic Issue",
+            title: "In France, students are forced to make decisive choices too early, in the dark.",
+            lead: "As early as middle school, young people must submit life-shaping academic wishes without understanding real career paths, alternative bridges, or basic adult administration.",
+            stat1Num: "Age 14",
+            stat1Text: "The age of the first decisive orientation choices without visibility into real career outcomes.",
+            stat2Num: "3 Gaps",
+            stat2Text: "Blind choices in middle school, specialty regret in high school, and administrative stress at university.",
+            points: [
+              { icon: "fa-eye-slash", title: "Lack of real-world visibility", desc: "Students choose by copying friends rather than understanding what professions actually entail." },
+              { icon: "fa-lock", title: "The trap of perceived irreversibility", desc: "In high school, choosing the wrong specialties makes students feel they have 'ruined their lives'." },
+              { icon: "fa-file-circle-exclamation", title: "Unprepared for adult reality", desc: "At age 20, university students face tax returns and tight budgets without ever being taught how." }
+            ]
+          },
+          // SLIDE 3: OUR 3 PERSONAS
+          {
+            type: "personas",
+            badge: "02 · Ground Reality",
+            title: "Three students, three cities, three urgent roadblocks",
+            subtitle: "Our personas highlight the disconnect between academic milestones and real-life student needs.",
+            cards: [
+              {
+                name: "İnaya, 14 years old",
+                role: "8th Grade (4e) · Middle School in Saint-Denis",
+                color: "indigo",
+                situation: "Must submit her high school orientation wishes by the end of the week. Wants to follow her best friend into nursing.",
+                quote: "“I want to go to the same high school as my friend to study nursing, without really knowing if I’ll even like the field.”"
+              },
+              {
+                name: "Saphir, 17 years old",
+                role: "11th Grade (Première) · High School in Nice",
+                color: "rose",
+                situation: "Skipped school today. Hates the specialties he picked and feels completely trapped in his future.",
+                quote: "“How am I going to get through this? I feel like I’ve ruined my life by choosing these subjects.”"
+              },
+              {
+                name: "Rayan Ali, 20 years old",
+                role: "2nd-Year Undergrad (L2) · Plouhinec",
+                color: "emerald",
+                situation: "Returns exhausted from his part-time restaurant shift. Has to prepare tax forms and stretch his salary until month-end.",
+                quote: "“I don't even know what to eat tonight, and I'm stressed about all the tax paperwork waiting for me at home.”"
+              }
+            ]
+          },
+          // SLIDE 4: WHAT BLOCKS THEM VS A GOOD DAY
+          {
+            type: "comparison",
+            badge: "03 · Blockages vs. Impact",
+            title: "What blocks them today vs. What a 'Good Day' looks like",
+            colBlock: "What blocks them today",
+            colGood: "A 'Good Day' with CapAvenir",
+            rows: [
+              {
+                who: "İnaya (14 · Saint-Denis)",
+                block: "Lacks knowledge about academic paths and defaults to following her best friend's ambitions.",
+                good: "Receives clear, pedagogical explanations of healthcare and other tracks so she chooses based on what SHE wants."
+              },
+              {
+                who: "Saphir (17 · Nice)",
+                block: "Feels trapped by his high school specialties and believes he has zero chance of reaching his dream job.",
+                good: "Puts his choices into perspective and discovers concrete alternative pathways to reach his desired studies."
+              },
+              {
+                who: "Rayan Ali (20 · Plouhinec)",
+                block: "Has no knowledge of tax reporting or managing a tight part-time paycheck through the end of the month.",
+                good: "Gets step-by-step guidance on tax formalities, monthly budgeting, and quick low-cost student meals."
+              }
+            ]
+          },
+          // SLIDE 5: THE SOLUTION - WEEKLY THEMATIC IMMERSIONS
+          {
+            type: "solution",
+            badge: "04 · The Pedagogical Solution",
+            title: "Every week, a level-adapted theme in every school across France",
+            subtitle: "A structured national calendar bringing real professionals, older peers, and practical workshops into classrooms.",
+            levels: [
+              {
+                level: "Middle School (Collège)",
+                tag: "Discover & Broaden Horizons",
+                color: "indigo",
+                items: [
+                  "Agriculture & Crafts Week: Real professionals visit schools to demonstrate what they do, how they work, and why.",
+                  "Peer Orientation Week: Older high school students explain their courses, why they chose them, and their future goals."
+                ]
+              },
+              {
+                level: "High School (Lycée)",
+                tag: "Clarify Pathways & Self-Mastery",
+                color: "rose",
+                items: [
+                  "Specialties & Career Reality Week: University students and professionals explain real opportunities and bridges.",
+                  "Brain, Sleep & Study Week: Learning how the teenage brain works, regulating sleep schedules, and managing school stress."
+                ]
+              },
+              {
+                level: "University & Higher Ed",
+                tag: "Master Adult Life Formalities",
+                color: "emerald",
+                items: [
+                  "Administration & Tax Workshops: Hands-on courses to file tax returns and claim student housing/social benefits.",
+                  "Financial Management & Daily Life: Budgeting a part-time salary, avoiding overdrafts, and healthy low-cost cooking."
+                ]
+              }
+            ]
+          },
+          // SLIDE 6: LOCAL DIGITAL COMPANION
+          {
+            type: "local",
+            badge: "05 · Localized & Personalized App",
+            title: "A state-funded digital companion adapted to every city and student",
+            subtitle: "Because İnaya in Saint-Denis, Saphir in Nice, and Rayan Ali in Plouhinec face local realities, the app tailors mentors, schools, and tools to their exact location.",
+            features: [
+              { icon: "fa-map-location-dot", title: "Local Mentors & Open Houses", desc: "Connects students with nearby high schools, local artisans, and regional career forums." },
+              { icon: "fa-route", title: "Pathway & Bridges Simulator", desc: "Removes specialty panic by mapping all alternative routes into any desired university major or job." },
+              { icon: "fa-calculator", title: "Adult-Life Practical Toolkit", desc: "10-minute first tax return walkthroughs, end-of-month budget calculator, and €3 student recipes." }
+            ],
+            ctaLaunch: "Open Live App Prototype Now"
+          }
+        ],
+
+        // INTERACTIVE APP PROTOTYPE CONTENT
+        appBannerBadge: "Interactive Demo · State App",
+        appBannerTitle: "Experience CapAvenir through each student's eyes",
+        appBannerSub: "Switch profiles to see how the app adapts to their city, school level, and immediate roadblock.",
+        tabInayaSub: "8th Grade · Saint-Denis",
+        tabSaphirSub: "11th Grade · Nice",
+        tabRayanSub: "2nd-Yr Uni · Plouhinec",
+
+        personasApp: {
+          inaya: {
+            contextTitle: "Profile: İnaya, 14 (Saint-Denis)",
+            contextBadge: "Middle School · Health & Careers Discovery Week",
+            blockageLabel: "Current Blockage:",
+            blockageText: "Wants to pick her best friend's high school for nursing without knowing what the job actually involves.",
+            solutionLabel: "CapAvenir Solution:",
+            solutionText: "Lets her test a nurse's real day-in-the-life and explore local high schools in Saint-Denis based on HER own interests.",
+            greeting: "Hi İnaya 👋",
+            locationHeader: "Collège Jean-Moulin · Saint-Denis (93)",
+            weekBanner: "This Week's Theme: Health, Care & Vocations",
+            navTabs: [
+              { id: "week", icon: "fa-calendar-check", label: "My Week" },
+              { id: "quiz", icon: "fa-stethoscope", label: "Job Reality" },
+              { id: "local", icon: "fa-school", label: "Local Schools" }
+            ],
+            weekTitle: "Your school's thematic schedule",
+            weekEvents: [
+              { day: "Tue · 2:00 PM", title: "Meet Sarah, Nurse at Delafontaine Hospital", desc: "Shift hours, technical care, and patient relationships: the unfiltered reality." },
+              { day: "Thu · 10:00 AM", title: "Saint-Denis High School Peer Forum", desc: "10th-grade students explain general, ST2S health, and vocational tracks." },
+              { day: "Fri · 4:00 PM", title: "Workshop: Choosing for yourself, not just following friends", desc: "Personal reflection checklist before submitting your orientation wishes." }
+            ],
+            quizTitle: "Nursing: Is it really right for you?",
+            quizIntro: "Answer 2 real-world scenarios shared by hospital nurses this week:",
+            quizQuestions: [
+              { q: "1. Working rotating shifts, weekends, and holidays at the hospital:", yes: "I'm motivated if I help people", no: "I prefer fixed daytime hours" },
+              { q: "2. Handling blood, medical procedures, and emergency stress:", yes: "I stay calm under pressure", no: "I prefer social work or counseling" }
+            ],
+            quizResultGood: "✨ Caregiving suits you! Also check out Midwifery, Radiology Tech, or Social Educator paths.",
+            quizResultAlt: "💡 Smart move checking first! You love helping people without the medical stress—explore Social Work & Youth Leadership tracks.",
+            localTitle: "High Schools & Open Houses near Saint-Denis",
+            localSchools: [
+              { name: "Lycée Paul Éluard (Saint-Denis)", track: "General & Health/Social Tech Track (ST2S)", dist: "1.2 km · Open House Saturday 9 AM" },
+              { name: "Lycée Suger (Saint-Denis)", track: "Customer Relations, Media & General Tracks", dist: "1.8 km · Guided Tour Wednesday 2 PM" }
+            ]
+          },
+          saphir: {
+            contextTitle: "Profile: Saphir, 17 (Nice)",
+            contextBadge: "High School · Bridges & Neuroscience Week",
+            blockageLabel: "Current Blockage:",
+            blockageText: "Skipped school today. Regrets his 11th-grade specialties and believes he has ruined his entire future.",
+            solutionLabel: "CapAvenir Solution:",
+            solutionText: "Proves no specialty choice is a dead end using the Pathways Simulator and helps him reset his sleep and motivation.",
+            greeting: "Hey Saphir 👋",
+            locationHeader: "Lycée Masséna · Nice (06)",
+            weekBanner: "This Week's Theme: Brain, Sleep & Career Bridges",
+            navTabs: [
+              { id: "bridges", icon: "fa-shuffle", label: "Pathways" },
+              { id: "brain", icon: "fa-brain", label: "Brain & Sleep" },
+              { id: "mentors", icon: "fa-user-graduate", label: "Nice Mentors" }
+            ],
+            bridgesTitle: "You have NOT ruined your life. Check your options:",
+            bridgesIntro: "Tap a post-high-school goal to see how you can still get there with your current subjects:",
+            bridgeTargets: [
+              {
+                label: "Computer Science / Tech (without Math specialty)",
+                plan: "✅ Accessible via BUT Computer Science quotas, MIASHS refresher track, or digital tech schools in Sophia-Antipolis."
+              },
+              {
+                label: "Business, Management or Communications",
+                plan: "✅ Your current specialties are fully accepted in BUT Business, Econ-Management degrees, or post-bac business programs."
+              },
+              {
+                label: "Dropping or switching a specialty for 12th Grade",
+                plan: "✅ You can drop the subject weighing you down at the end of 11th grade and request a bridge meeting with your head teacher this week."
+              }
+            ],
+            brainTitle: "Brain & Sleep Regulation Workshop",
+            brainTips: [
+              { icon: "fa-moon", title: "Why mornings feel impossible", desc: "At 17, adolescent melatonin shifts 2 hours later. Cutting screens 45 mins before bed boosts daytime focus by 35%." },
+              { icon: "fa-bolt", title: "The 25-Minute Reset Rule", desc: "Your brain retains information best in 25-minute sprints followed by a 5-minute active break." }
+            ],
+            mentorsTitle: "Université Côte d'Azur students who pivoted",
+            mentorsList: [
+              { name: "Yanis, 19 (1st-Yr CS in Nice)", story: "“I took Humanities & Econ in 11th grade. I did a bridge semester and now I'm studying software engineering.”" },
+              { name: "Clara, 20 (Business Tech Degree, Nice)", story: "“I skipped two weeks in 11th grade from pure stress. Talking to a student mentor changed everything.”" }
+            ]
+          },
+          rayan: {
+            contextTitle: "Profile: Rayan Ali, 20 (Plouhinec)",
+            contextBadge: "University · Adult Autonomy & Admin Week",
+            blockageLabel: "Current Blockage:",
+            blockageText: "Returns exhausted from his restaurant shift. Stressed about filing tax forms, stretching his paycheck, and making dinner.",
+            solutionLabel: "CapAvenir Solution:",
+            solutionText: "A zero-stress adulting toolkit: 3-step student tax guide, end-of-month daily budget tracker, and €3 quick dinners.",
+            greeting: "Good evening Rayan Ali 👋",
+            locationHeader: "2nd-Year Undergrad · Plouhinec (29)",
+            weekBanner: "This Week's Theme: Taxes, Budgeting & Student Rights",
+            navTabs: [
+              { id: "taxes", icon: "fa-file-invoice-dollar", label: "10m Taxes" },
+              { id: "budget", icon: "fa-wallet", label: "Budget" },
+              { id: "meals", icon: "fa-utensils", label: "€3 Meals" }
+            ],
+            taxesTitle: "Student Tax Return in 3 Simple Steps",
+            taxesSteps: [
+              { step: "1. Student Job Tax Exemption", desc: "Good news: your restaurant shift wages are tax-exempt up to €5,318/year (for students under 26)!" },
+              { step: "2. Independent vs. Family Filing", desc: "Filing independently can unlock Activity Bonus (Prime d'Activité) and streamline your housing aid (APL)." },
+              { step: "3. Free Campus Tax Clinic Thursday", desc: "A Public Finance advisor hosts a 30-min hands-on workshop on campus this Thursday at 5:30 PM." }
+            ],
+            budgetTitle: "End-of-Month Safe Daily Allowance",
+            budgetSalaryLabel: "Remaining Paycheck + Aid (€):",
+            budgetBillsLabel: "Remaining Fixed Bills (€):",
+            budgetDaysLabel: "Days left until next payday:",
+            budgetPerDayText: "You can safely spend up to",
+            budgetPerDaySuffix: "/ day until payday.",
+            mealsTitle: "Quick Dinner Ideas After Your Shift (< €3)",
+            mealsList: [
+              { name: "Herb & Potato Spanish Omelette", time: "10 min · €1.85", desc: "3 eggs, 2 potatoes, olive oil & garlic. High protein recovery after a restaurant shift." },
+              { name: "15-Minute Red Lentil Dahl & Rice", time: "15 min · €2.10", desc: "Red lentils, tomato paste, cumin & rice. Filling, warm, and super cheap." },
+              { name: "Whole-Wheat Pasta with Tuna & Lemon", time: "12 min · €2.40", desc: "Ready in the time it takes to boil pasta—zero stress." }
+            ]
+          }
+        }
+      }
+    };
+
+    // =========================================================================
+    // APPLICATION STATE
+    // =========================================================================
+    let currentLang = 'fr';
+    let currentMode = 'pitch'; // 'pitch' | 'app'
+    let currentSlide = 0;
+    let currentPersona = 'inaya'; // 'inaya' | 'saphir' | 'rayan'
+    let currentPhoneTab = 'week';
+
+    // Interactive widget states inside the phone mockup
+    let inayaQuizAnswers = { q0: null, q1: null };
+    let saphirSelectedBridge = 0;
+    let rayanBudget = { money: 340, bills: 160, days: 12 };
+
+    // =========================================================================
+    // CORE NAVIGATION & LANGUAGE SWITCHING
+    // =========================================================================
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+
+      // Update toggle button styles
+      const btnFr = document.getElementById('lang-fr');
+      const btnEn = document.getElementById('lang-en');
+      if (lang === 'fr') {
+        btnFr.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-[#000091] text-white shadow-sm";
+        btnEn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+      } else {
+        btnEn.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-[#000091] text-white shadow-sm";
+        btnFr.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+      }
+
+      renderAll();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      const secPitch = document.getElementById('section-pitch');
+      const secApp = document.getElementById('section-app');
+      const btnPitch = document.getElementById('btn-mode-pitch');
+      const btnApp = document.getElementById('btn-mode-app');
+
+      if (mode === 'pitch') {
+        secPitch.classList.remove('hidden');
+        secApp.classList.add('hidden');
+        secApp.classList.remove('flex');
+        btnPitch.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-white text-[#000091] shadow-sm";
+        btnApp.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900";
+      } else {
+        secPitch.classList.add('hidden');
+        secApp.classList.remove('hidden');
+        secApp.classList.add('flex');
+        btnApp.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-white text-[#000091] shadow-sm";
+        btnPitch.className = "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-600 hover:text-slate-900";
+      }
+      renderAll();
+    }
+
+    function nextSlide() {
+      const total = i18n[currentLang].slides.length;
+      if (currentSlide < total - 1) {
+        currentSlide++;
+        renderSlideDeck();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlideDeck();
+      }
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      renderSlideDeck();
+    }
+
+    function selectPersona(persona) {
+      currentPersona = persona;
+      const defaultTabs = { inaya: 'week', saphir: 'bridges', rayan: 'taxes' };
+      currentPhoneTab = defaultTabs[persona];
+      renderAppPrototype();
+    }
+
+    function selectPhoneTab(tabId) {
+      currentPhoneTab = tabId;
+      renderPhoneScreen();
+    }
+
+    // Keyboard arrow support for pitch presentation
+    document.addEventListener('keydown', (e) => {
+      if (currentMode !== 'pitch') return;
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // =========================================================================
+    // RENDER ALL UI TEXT & VIEWS
+    // =========================================================================
+    function renderAll() {
+      const t = i18n[currentLang];
+      document.getElementById('badge-gov').textContent = t.govBadge;
+      document.getElementById('brand-tagline').textContent = t.tagline;
+      document.getElementById('nav-pitch-label').textContent = t.navPitch;
+      document.getElementById('nav-app-label').textContent = t.navApp;
+      document.getElementById('txt-prev').textContent = t.prev;
+      document.getElementById('txt-next').textContent = t.next;
+
+      renderSlideDeck();
+      renderAppPrototype();
+    }
+
+    // =========================================================================
+    // RENDER PART 1: PITCH DECK SLIDES
+    // =========================================================================
+    function renderSlideDeck() {
+      const t = i18n[currentLang];
+      const slides = t.slides;
+      const slide = slides[currentSlide];
+
+      // Update counter & buttons
+      document.getElementById('slide-counter').textContent = `${t.slideLabel} ${currentSlide + 1} / ${slides.length}`;
+      document.getElementById('btn-prev').disabled = currentSlide === 0;
+      document.getElementById('btn-next').disabled = currentSlide === slides.length - 1;
+
+      // Render progress dots
+      const dotsContainer = document.getElementById('slide-dots');
+      dotsContainer.innerHTML = slides.map((_, idx) => `
+        <button onclick="goToSlide(${idx})" aria-label="Slide ${idx + 1}" class="h-2.5 rounded-full transition-all ${idx === currentSlide ? 'w-8 bg-[#000091]' : 'w-2.5 bg-slate-300 hover:bg-slate-400'}"></button>
+      `).join('');
+
+      const stage = document.getElementById('slide-stage');
+
+      // SLIDE 1: HERO
+      if (slide.type === 'hero') {
+        stage.innerHTML = `
+          <div class="slide-fade civic-gradient text-white p-8 sm:p-14 min-h-[540px] flex flex-col justify-between">
+            <div class="max-w-4xl">
+              <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs sm:text-sm font-semibold tracking-wide mb-6">
+                <span class="w-2 h-2 rounded-full bg-[#E1000F]"></span>
+                ${slide.eyebrow}
+              </span>
+              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6">
+                ${slide.title}
+              </h1>
+              <p class="text-base sm:text-xl text-blue-100 leading-relaxed max-w-3xl mb-8">
+                ${slide.subtitle}
+              </p>
+              <div class="flex flex-wrap gap-4">
+                <button onclick="setMode('app')" class="px-6 py-3.5 rounded-2xl bg-[#E1000F] hover:bg-red-700 text-white font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2.5">
+                  <i class="fa-solid fa-mobile-screen-button"></i>
+                  <span>${slide.ctaApp}</span>
+                </button>
+                <button onclick="nextSlide()" class="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold text-sm sm:text-base transition flex items-center gap-2">
+                  <span>${slide.ctaNext}</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10 pt-8 border-t border-white/15">
+              ${slide.pillars.map(p => `
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+                  <i class="fa-solid ${p.icon} text-xl text-amber-300 mb-3"></i>
+                  <h3 class="font-bold text-lg mb-1">${p.title}</h3>
+                  <p class="text-sm text-blue-100">${p.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // SLIDE 2: SYSTEMIC PROBLEM
+      if (slide.type === 'problem') {
+        stage.innerHTML = `
+          <div class="slide-fade p-8 sm:p-12 min-h-[540px] flex flex-col justify-between bg-white">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-[#E1000F]">${slide.badge}</span>
+              <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mt-2 mb-4 max-w-4xl">${slide.title}</h2>
+              <p class="text-base sm:text-lg text-slate-600 max-w-3xl">${slide.lead}</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 my-6 items-stretch">
+              <div class="lg:col-span-5 flex flex-col gap-4 justify-center">
+                <div class="p-6 rounded-2xl bg-blue-50 border border-blue-100">
+                  <div class="font-display text-4xl sm:text-5xl font-bold text-[#000091]">${slide.stat1Num}</div>
+                  <p class="text-sm sm:text-base text-slate-700 mt-2 font-medium">${slide.stat1Text}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-red-50 border border-red-100">
+                  <div class="font-display text-4xl sm:text-5xl font-bold text-[#E1000F]">${slide.stat2Num}</div>
+                  <p class="text-sm sm:text-base text-slate-700 mt-2 font-medium">${slide.stat2Text}</p>
+                </div>
+              </div>
+
+              <div class="lg:col-span-7 flex flex-col justify-center gap-4">
+                ${slide.points.map(pt => `
+                  <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-[#000091] flex items-center justify-center shrink-0 shadow-sm">
+                      <i class="fa-solid ${pt.icon} text-lg"></i>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-lg text-slate-900">${pt.title}</h3>
+                      <p class="text-sm text-slate-600 mt-1">${pt.desc}</p>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // SLIDE 3: OUR 3 PERSONAS
+      if (slide.type === 'personas') {
+        const personaIds = ['inaya', 'saphir', 'rayan'];
+        const colorStyles = {
+          indigo: { badge: 'bg-indigo-100 text-indigo-800', border: 'border-indigo-200', avatar: 'bg-indigo-600', initials: 'İN' },
+          rose: { badge: 'bg-rose-100 text-rose-800', border: 'border-rose-200', avatar: 'bg-rose-600', initials: 'SA' },
+          emerald: { badge: 'bg-emerald-100 text-emerald-800', border: 'border-emerald-200', avatar: 'bg-emerald-600', initials: 'RA' }
+        };
+        stage.innerHTML = `
+          <div class="slide-fade p-8 sm:p-12 min-h-[540px] flex flex-col justify-between bg-slate-50">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-[#000091]">${slide.badge}</span>
+              <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mt-2 mb-2">${slide.title}</h2>
+              <p class="text-base text-slate-600">${slide.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+              ${slide.cards.map((c, idx) => {
+                const st = colorStyles[c.color];
+                const pid = personaIds[idx];
+                return `
+                  <div class="bg-white rounded-3xl p-6 border ${st.border} shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                      <div class="flex items-center gap-3.5 mb-4">
+                        <div class="w-12 h-12 rounded-2xl ${st.avatar} text-white font-display font-bold text-lg flex items-center justify-center shrink-0">
+                          ${st.initials}
+                        </div>
+                        <div>
+                          <h3 class="font-bold text-xl text-slate-900">${c.name}</h3>
+                          <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full ${st.badge} mt-0.5">${c.role}</span>
+                        </div>
+                      </div>
+                      <p class="text-sm text-slate-700 leading-relaxed mb-4">${c.situation}</p>
+                      <blockquote class="p-3.5 rounded-2xl bg-slate-50 border-l-4 border-slate-400 text-xs sm:text-sm italic text-slate-600">
+                        ${c.quote}
+                      </blockquote>
+                    </div>
+
+                    <button onclick="selectPersona('${pid}'); setMode('app');" class="mt-5 w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-[#000091] text-white text-xs font-semibold transition flex items-center justify-center gap-2">
+                      <i class="fa-solid fa-mobile-screen"></i>
+                      <span>${currentLang === 'fr' ? 'Voir son espace dans l’app' : 'Open their app view'}</span>
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // SLIDE 4: WHAT BLOCKS THEM VS A GOOD DAY
+      if (slide.type === 'comparison') {
+        stage.innerHTML = `
+          <div class="slide-fade p-8 sm:p-12 min-h-[540px] flex flex-col justify-between bg-white">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-[#E1000F]">${slide.badge}</span>
+              <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mt-2">${slide.title}</h2>
+            </div>
+
+            <div class="space-y-4 my-6">
+              <div class="hidden md:grid md:grid-cols-12 gap-4 px-4 text-xs font-bold uppercase tracking-wider">
+                <div class="md:col-span-3 text-slate-400">Persona</div>
+                <div class="md:col-span-4 text-[#E1000F] flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark"></i> ${slide.colBlock}</div>
+                <div class="md:col-span-5 text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> ${slide.colGood}</div>
+              </div>
+
+              ${slide.rows.map(r => `
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200 items-center">
+                  <div class="md:col-span-3 font-bold text-base text-[#000091]">${r.who}</div>
+                  <div class="md:col-span-4 p-3.5 rounded-xl bg-red-50/80 border border-red-100 text-sm text-slate-800">
+                    ${r.block}
+                  </div>
+                  <div class="md:col-span-5 p-3.5 rounded-xl bg-emerald-50/90 border border-emerald-200 text-sm text-slate-900 font-medium">
+                    ${r.good}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // SLIDE 5: WEEKLY THEMATIC IMMERSIONS
+      if (slide.type === 'solution') {
+        const badgeColors = {
+          indigo: 'bg-indigo-600 text-white',
+          rose: 'bg-[#E1000F] text-white',
+          emerald: 'bg-emerald-600 text-white'
+        };
+        stage.innerHTML = `
+          <div class="slide-fade p-8 sm:p-12 min-h-[540px] flex flex-col justify-between bg-slate-50">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-[#000091]">${slide.badge}</span>
+              <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 mt-2 mb-2">${slide.title}</h2>
+              <p class="text-base text-slate-600">${slide.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6">
+              ${slide.levels.map(lvl => `
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col">
+                  <span class="self-start text-xs font-bold px-3 py-1 rounded-full ${badgeColors[lvl.color]} mb-3">
+                    ${lvl.tag}
+                  </span>
+                  <h3 class="text-xl font-bold text-slate-900 mb-4">${lvl.level}</h3>
+                  <ul class="space-y-3.5 text-sm text-slate-700 flex-grow">
+                    ${lvl.items.map(item => `
+                      <li class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-check-circle text-[#000091] mt-1 shrink-0"></i>
+                        <span>${item}</span>
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // SLIDE 6: LOCAL DIGITAL COMPANION
+      if (slide.type === 'local') {
+        stage.innerHTML = `
+          <div class="slide-fade p-8 sm:p-12 min-h-[540px] flex flex-col justify-between civic-gradient text-white">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-widest text-amber-300">${slide.badge}</span>
+              <h2 class="text-2xl sm:text-4xl font-bold mt-2 mb-3 max-w-4xl">${slide.title}</h2>
+              <p class="text-base sm:text-lg text-blue-100 max-w-3xl">${slide.subtitle}</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-8">
+              ${slide.features.map(f => `
+                <div class="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-6">
+                  <div class="w-12 h-12 rounded-xl bg-white text-[#000091] flex items-center justify-center text-xl mb-4 shadow">
+                    <i class="fa-solid ${f.icon}"></i>
+                  </div>
+                  <h3 class="font-bold text-lg mb-2">${f.title}</h3>
+                  <p class="text-sm text-blue-100 leading-relaxed">${f.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-white/15">
+              <div class="text-sm text-blue-100">
+                Saint-Denis (93) · Nice (06) · Plouhinec (29) · Partout en France
+              </div>
+              <button onclick="setMode('app')" class="px-6 py-3.5 rounded-2xl bg-[#E1000F] hover:bg-red-700 text-white font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2.5">
+                <i class="fa-solid fa-play"></i>
+                <span>${slide.ctaLaunch}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // RENDER PART 2: LIVE INTERACTIVE APPLICATION PROTOTYPE
+    // =========================================================================
+    function renderAppPrototype() {
+      const t = i18n[currentLang];
+      document.getElementById('app-banner-badge').innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>${t.appBannerBadge}</span>`;
+      document.getElementById('app-banner-title').textContent = t.appBannerTitle;
+      document.getElementById('app-banner-sub').textContent = t.appBannerSub;
+      document.getElementById('tab-inaya-sub').textContent = t.tabInayaSub;
+      document.getElementById('tab-saphir-sub').textContent = t.tabSaphirSub;
+      document.getElementById('tab-rayan-sub').textContent = t.tabRayanSub;
+
+      // Update active persona tab styling
+      ['inaya', 'saphir', 'rayan'].forEach(pid => {
+        const el = document.getElementById(`tab-${pid}`);
+        if (pid === currentPersona) {
+          el.className = "p-3 rounded-2xl border-2 text-left transition-all flex items-center gap-3 border-[#000091] bg-blue-50/70 shadow-sm";
+        } else {
+          el.className = "p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 text-left transition-all flex items-center gap-3";
+        }
+      });
+
+      const pData = t.personasApp[currentPersona];
+
+      // Render left-side pedagogical context card
+      document.getElementById('app-context-panel').innerHTML = `
+        <div>
+          <span class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-50 text-[#000091] border border-blue-200 mb-3">
+            ${pData.contextBadge}
+          </span>
+          <h3 class="text-2xl font-bold text-slate-900">${pData.contextTitle}</h3>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-red-50 border border-red-100 space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-[#E1000F] flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>${pData.blockageLabel}</span>
+          </div>
+          <p class="text-sm text-slate-800 leading-relaxed">${pData.blockageText}</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>${pData.solutionLabel}</span>
+          </div>
+          <p class="text-sm text-slate-800 leading-relaxed font-medium">${pData.solutionText}</p>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span><i class="fa-solid fa-hand-pointer mr-1 text-[#000091]"></i> ${currentLang === 'fr' ? 'Interagissez avec l’écran du téléphone à droite →' : 'Interact with the phone screen on the right →'}</span>
+        </div>
+      `;
+
+      renderPhoneScreen();
+    }
+
+    function renderPhoneScreen() {
+      const t = i18n[currentLang];
+      const pData = t.personasApp[currentPersona];
+
+      // Phone Header
+      document.getElementById('phone-header-content').innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-xs text-blue-200 flex items-center gap-1">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>${pData.locationHeader}</span>
+            </div>
+            <h4 class="font-display font-bold text-lg mt-0.5">${pData.greeting}</h4>
+          </div>
+          <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-lg bg-white/15 border border-white/20">
+            ${currentLang.toUpperCase()}
+          </span>
+        </div>
+        <div class="mt-3 px-3 py-2 rounded-xl bg-white/10 border border-white/15 text-xs font-medium flex items-center gap-2">
+          <i class="fa-solid fa-calendar-week text-amber-300"></i>
+          <span>${pData.weekBanner}</span>
+        </div>
+      `;
+
+      // Bottom Navigation Tabs inside phone
+      document.getElementById('phone-bottom-nav').innerHTML = pData.navTabs.map(tab => {
+        const active = tab.id === currentPhoneTab;
+        return `
+          <button onclick="selectPhoneTab('${tab.id}')" class="py-1.5 px-2 rounded-xl flex flex-col items-center justify-center gap-1 transition ${active ? 'text-[#000091] bg-blue-50 font-bold' : 'text-slate-500 hover:text-slate-800'}">
+            <i class="fa-solid ${tab.icon} text-sm"></i>
+            <span class="text-[11px]">${tab.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      const body = document.getElementById('phone-screen-body');
+
+      // -----------------------------------------------------------------------
+      // İNAYA'S PHONE SCREENS
+      // -----------------------------------------------------------------------
+      if (currentPersona === 'inaya') {
+        if (currentPhoneTab === 'week') {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.weekTitle}</h5>
+            <div class="space-y-3">
+              ${pData.weekEvents.map(ev => `
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                  <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">${ev.day}</span>
+                  <div class="font-bold text-sm text-slate-900 mt-1.5">${ev.title}</div>
+                  <p class="text-xs text-slate-600 mt-1 leading-relaxed">${ev.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (currentPhoneTab === 'quiz') {
+          const answeredBoth = inayaQuizAnswers.q0 !== null && inayaQuizAnswers.q1 !== null;
+          const bothYes = inayaQuizAnswers.q0 === true && inayaQuizAnswers.q1 === true;
+          body.innerHTML = `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <h5 class="font-bold text-sm text-slate-900">${pData.quizTitle}</h5>
+              <p class="text-xs text-slate-600">${pData.quizIntro}</p>
+              ${pData.quizQuestions.map((item, i) => `
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="text-xs font-semibold text-slate-800">${item.q}</div>
+                  <div class="grid grid-cols-1 gap-1.5">
+                    <button onclick="inayaQuizAnswers.q${i}=true; renderPhoneScreen();" class="text-left text-xs px-3 py-2 rounded-lg border transition ${inayaQuizAnswers['q'+i] === true ? 'bg-indigo-600 text-white border-indigo-600 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}">
+                      ${item.yes}
+                    </button>
+                    <button onclick="inayaQuizAnswers.q${i}=false; renderPhoneScreen();" class="text-left text-xs px-3 py-2 rounded-lg border transition ${inayaQuizAnswers['q'+i] === false ? 'bg-slate-800 text-white border-slate-800 font-semibold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'}">
+                      ${item.no}
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+              ${answeredBoth ? `
+                <div class="p-3.5 rounded-xl ${bothYes ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-amber-50 border border-amber-200 text-amber-900'} text-xs font-medium leading-relaxed">
+                  ${bothYes ? pData.quizResultGood : pData.quizResultAlt}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.localTitle}</h5>
+            <div class="space-y-3">
+              ${pData.localSchools.map(sc => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div class="font-bold text-sm text-[#000091]">${sc.name}</div>
+                  <div class="text-xs font-medium text-slate-800 mt-1">${sc.track}</div>
+                  <div class="text-[11px] text-emerald-700 font-semibold mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-door-open"></i>
+                    <span>${sc.dist}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // SAPHIR'S PHONE SCREENS
+      // -----------------------------------------------------------------------
+      if (currentPersona === 'saphir') {
+        if (currentPhoneTab === 'bridges') {
+          body.innerHTML = `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <h5 class="font-bold text-sm text-slate-900">${pData.bridgesTitle}</h5>
+              <p class="text-xs text-slate-600">${pData.bridgesIntro}</p>
+              <div class="space-y-2">
+                ${pData.bridgeTargets.map((bt, idx) => `
+                  <button onclick="saphirSelectedBridge=${idx}; renderPhoneScreen();" class="w-full text-left p-3 rounded-xl border text-xs font-semibold transition ${saphirSelectedBridge === idx ? 'bg-rose-600 text-white border-rose-600' : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'}">
+                    ${bt.label}
+                  </button>
+                `).join('')}
+              </div>
+              <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 font-medium leading-relaxed">
+                ${pData.bridgeTargets[saphirSelectedBridge].plan}
+              </div>
+            </div>
+          `;
+        } else if (currentPhoneTab === 'brain') {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.brainTitle}</h5>
+            <div class="space-y-3">
+              ${pData.brainTips.map(tip => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div class="flex items-center gap-2 font-bold text-sm text-rose-600 mb-1.5">
+                    <i class="fa-solid ${tip.icon}"></i>
+                    <span>${tip.title}</span>
+                  </div>
+                  <p class="text-xs text-slate-700 leading-relaxed">${tip.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.mentorsTitle}</h5>
+            <div class="space-y-3">
+              ${pData.mentorsList.map(m => `
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                  <div class="font-bold text-sm text-slate-900">${m.name}</div>
+                  <p class="text-xs italic text-slate-600 mt-1.5 leading-relaxed">${m.story}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // RAYAN ALI'S PHONE SCREENS
+      // -----------------------------------------------------------------------
+      if (currentPersona === 'rayan') {
+        if (currentPhoneTab === 'taxes') {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.taxesTitle}</h5>
+            <div class="space-y-3">
+              ${pData.taxesSteps.map(st => `
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                  <div class="font-bold text-xs text-emerald-700">${st.step}</div>
+                  <p class="text-xs text-slate-700 mt-1 leading-relaxed">${st.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (currentPhoneTab === 'budget') {
+          const remaining = Math.max(0, rayanBudget.money - rayanBudget.bills);
+          const perDay = rayanBudget.days > 0 ? (remaining / rayanBudget.days).toFixed(2) : remaining.toFixed(2);
+          body.innerHTML = `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <h5 class="font-bold text-sm text-slate-900">${pData.budgetTitle}</h5>
+
+              <div>
+                <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                  <span>${pData.budgetSalaryLabel}</span>
+                  <span class="font-bold">${rayanBudget.money} €</span>
+                </div>
+                <input type="range" min="100" max="900" step="10" value="${rayanBudget.money}" oninput="rayanBudget.money=Number(this.value); renderPhoneScreen();" class="w-full accent-[#000091]" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                  <span>${pData.budgetBillsLabel}</span>
+                  <span class="font-bold">${rayanBudget.bills} €</span>
+                </div>
+                <input type="range" min="0" max="600" step="10" value="${rayanBudget.bills}" oninput="rayanBudget.bills=Number(this.value); renderPhoneScreen();" class="w-full accent-[#E1000F]" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+                  <span>${pData.budgetDaysLabel}</span>
+                  <span class="font-bold">${rayanBudget.days}</span>
+                </div>
+                <input type="range" min="1" max="30" step="1" value="${rayanBudget.days}" oninput="rayanBudget.days=Number(this.value); renderPhoneScreen();" class="w-full accent-emerald-600" />
+              </div>
+
+              <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center">
+                <div class="text-xs text-emerald-800">${pData.budgetPerDayText}</div>
+                <div class="font-display text-2xl font-bold text-emerald-700 my-0.5">${perDay} €</div>
+                <div class="text-xs text-emerald-800">${pData.budgetPerDaySuffix}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          body.innerHTML = `
+            <h5 class="font-bold text-sm text-slate-900">${pData.mealsTitle}</h5>
+            <div class="space-y-3">
+              ${pData.mealsList.map(ml => `
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-slate-900">${ml.name}</span>
+                    <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">${ml.time}</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${ml.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+    });
+  </script>
+</body>
+</html>
